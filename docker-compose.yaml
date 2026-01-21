@@ -1,0 +1,37 @@
+# nginx proxy address - http://172.17.0.1:60156
+
+name: minarca
+x-logging: &default-logging
+  options:
+    max-size: '5m'
+    max-file: '1'
+  driver: json-file
+
+services:
+  app:
+    image: ikus060/minarca-server:latest
+    container_name: minarca-app
+    hostname: ${BASE_HOST_NAME:-$HOSTNAME}
+    restart: always
+    pull_policy: always
+    privileged: true
+    logging: *default-logging
+    environment:
+      TZ: ${TZ:-America/New_York}
+      MINARCA_BRAND_HEADER_NAME: ${APP_ORG_NAME:-Minarca Server}
+      MINARCA_EXTERNAL_URL: https://${BASE_HOST_NAME:-$HOSTNAME}
+      MINARCA_MINARCA_REMOTE_HOST: ${BASE_HOST_NAME:-$HOSTNAME}:2222
+    ports:
+      - '2222:22'
+      - '172.17.0.1:60156:8080'
+    volumes:
+      - '/media/backups:/backups'
+      - './rootfs/config/minarca:/etc/minarca'
+      - './rootfs/data/log/minarca:/var/log/minarca'
+    networks:
+      - minarca
+
+networks:
+  minarca:
+    name: minarca
+    external: false
