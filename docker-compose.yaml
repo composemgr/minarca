@@ -26,8 +26,8 @@ services:
       - '172.17.0.1:60156:8080'
     volumes:
       - '/media/backups:/backups'
-      - './rootfs/config/minarca:/etc/minarca'
-      - './rootfs/data/log/minarca:/var/log/minarca'
+      - './volumes/config/minarca:/etc/minarca'
+      - './volumes/data/log/minarca:/var/log/minarca'
     networks:
       - minarca
 
