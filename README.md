@@ -46,8 +46,8 @@ See `docker-compose.yaml` for complete list of configurable options.
 
 ## 📂 Volumes
 
-- `./rootfs/config/minarca` - Data storage
-- `./rootfs/data/log/minarca` - Data storage
+- `./volumes/config/minarca` - Data storage
+- `./volumes/data/log/minarca` - Data storage
 
 ## 🔍 Logging
 
