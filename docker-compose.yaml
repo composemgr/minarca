@@ -21,6 +21,8 @@ services:
       MINARCA_BRAND_HEADER_NAME: ${APP_ORG_NAME:-Minarca Server}
       MINARCA_EXTERNAL_URL: https://${BASE_HOST_NAME:-$HOSTNAME}
       MINARCA_MINARCA_REMOTE_HOST: ${BASE_HOST_NAME:-$HOSTNAME}:2222
+      MINARCA_ADMIN_USER: ${APP_ADMIN_USER:-administrator}
+      MINARCA_ADMIN_PASSWORD: ${APP_ADMIN_PASS:-changeme_admin_password}
     ports:
       - '2222:22'
       - '172.17.0.1:60156:8080'
