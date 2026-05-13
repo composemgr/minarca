@@ -18,6 +18,8 @@ services:
     logging: *default-logging
     environment:
       TZ: ${TZ:-America/New_York}
+      CONTAINER_NAME: minarca-app
+      HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
       MINARCA_BRAND_HEADER_NAME: ${APP_ORG_NAME:-Minarca Server}
       MINARCA_EXTERNAL_URL: https://${BASE_HOST_NAME:-$HOSTNAME}
       MINARCA_MINARCA_REMOTE_HOST: ${BASE_HOST_NAME:-$HOSTNAME}:2222
@@ -32,8 +34,30 @@ services:
       - './volumes/data/log/minarca:/var/log/minarca'
     networks:
       - minarca
+      - proxy
+      - cloudflare
+    labels:
+      - 'traefik.enable=true'
+      - 'cloudflare.enable=true'
+      - 'traefik.docker.network=proxy'
+      - 'cloudflare.service=http://minarca-app:8080'
+      - 'cloudflare.hostname=minarca.${CLOUDFLARE_ZONE_NAME:-}'
+      - 'traefik.http.routers.minarca-app.entrypoints=http'
+      - 'traefik.http.routers.minarca-app-secure.tls=true'
+      - 'traefik.http.routers.minarca-app.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
+      - 'traefik.http.middlewares.minarca-app-https-redirect.redirectscheme.scheme=https'
+      - 'traefik.http.routers.minarca-app.middlewares=minarca-app-https-redirect'
+      - 'traefik.http.routers.minarca-app-secure.entrypoints=https'
+      - 'traefik.http.routers.minarca-app-secure.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
+      - 'traefik.http.routers.minarca-app-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.minarca-app-secure.service=minarca-app'
+      - 'traefik.http.services.minarca-app.loadbalancer.server.port=8080'
 
 networks:
   minarca:
     name: minarca
     external: false
+  proxy:
+    external: true
+  cloudflare:
+    external: true
